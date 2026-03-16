@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Malaysia Number Extractor</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #ffffff;
+      --ink: #0b1220;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-dark: #1e40af;
+      --success: #16a34a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 600px at 10% 0%, #1e293b 0%, #0f172a 40%, #0b1220 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    p.subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 16px 0 20px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.05s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .secondary:hover {
+      background: #cbd5f5;
+    }
+
+    .results {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 140px;
+      font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+      font-size: 14px;
+      white-space: pre-line;
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin: 0 0 8px;
+      font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    .counter {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .copy-status {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--success);
+      min-height: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 20px; }
+      h1 { font-size: 22px; }
+      textarea { min-height: 180px; }
+      .actions { flex-direction: column; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Malaysia Phone Number Extractor</h1>
+    <p class="subtitle">Paste any messy text below. We'll extract Malaysian numbers that start with 60.</p>
+
+    <textarea id="inputText" placeholder="Paste messy text with names, emojis, random words, and phone numbers..."></textarea>
+
+    <div class="actions">
+      <button class="primary" id="extractBtn">Submit / Extract Numbers</button>
+      <button class="secondary" id="copyBtn">Copy All Numbers</button>
+    </div>
+
+    <div class="results" id="results">
+      <div class="result-title">Extracted Numbers:</div>
+      <div id="numbersList">(none)</div>
+    </div>
+
+    <div class="counter" id="counter">Total Numbers: 0</div>
+    <div class="copy-status" id="copyStatus"></div>
+  </div>
+
+  <script>
+    const inputText = document.getElementById('inputText');
+    const extractBtn = document.getElementById('extractBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const numbersList = document.getElementById('numbersList');
+    const counter = document.getElementById('counter');
+    const copyStatus = document.getElementById('copyStatus');
+
+    function extractNumbers(text) {
+      // Find sequences of digits starting with 60 and length 10-12
+      const matches = text.match(/\b60\d{8,10}\b/g) || [];
+      const unique = Array.from(new Set(matches));
+      return unique;
+    }
+
+    function render(numbers) {
+      if (numbers.length === 0) {
+        numbersList.textContent = '(none)';
+      } else {
+        numbersList.textContent = numbers.join('\n');
+      }
+      counter.textContent = `Total Numbers: ${numbers.length}`;
+    }
+
+    extractBtn.addEventListener('click', () => {
+      const numbers = extractNumbers(inputText.value);
+      render(numbers);
+      copyStatus.textContent = '';
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      const current = numbersList.textContent.trim();
+      if (!current || current === '(none)') {
+        copyStatus.textContent = 'No numbers to copy.';
+        copyStatus.style.color = '#ef4444';
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(current);
+        copyStatus.textContent = 'Numbers copied!';
+        copyStatus.style.color = 'var(--success)';
+      } catch (err) {
+        copyStatus.textContent = 'Copy failed. Please try again.';
+        copyStatus.style.color = '#ef4444';
+      }
+    });
+  </script>
+</body>
+</html>
